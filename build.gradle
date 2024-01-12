@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+}
+//creat fatjar
+tasks.register('customFatJar', Jar) {
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+
+    doLast {
+        System.out.println("Jar is complited!")
+    }
+}
+
+//delete
+tasks.register('deleteFile', Delete) {
+    delete 'build'
+
+    doLast {
+        System.out.println("Delete package build")
+    }
+}
+
+// 6 step run app
+tasks.register('runWithExecJarExecutable', Exec) {
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", "build/libs/HWTask2-1.0-SNAPSHOT.jar"
+}
+
+test {
+    useJUnitPlatform()
+}
