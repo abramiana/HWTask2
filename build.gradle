@@ -12,20 +12,8 @@ repositories {
 dependencies {
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 }
-//creat fatjar
-tasks.register('customFatJar', Jar) {
-    manifest {
-        attributes 'Main-Class': 'org.example.Main'
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 
-    doLast {
-        System.out.println("Jar is complited!")
-    }
-}
-
-//delete
+// 1 delete
 tasks.register('deleteFile', Delete) {
     delete 'build'
 
@@ -34,11 +22,27 @@ tasks.register('deleteFile', Delete) {
     }
 }
 
-// 6 step run app
-tasks.register('runWithExecJarExecutable', Exec) {
+// 2 create fatjar
+tasks.register('createFile', Jar) {
+    archiveFileName = 'Artur.jar'
+    manifest {
+
+        attributes('Main-Class': 'org.example.Main')
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+
+    doLast {
+        System.out.println("Jar is complited!")
+    }
+}
+
+// 3 step run app
+tasks.register('runFile', Exec) {
     group = "Execution"
     description = "Run the output executable jar with ExecTask"
-    commandLine "java", "-jar", "build/libs/HWTask2-1.0-SNAPSHOT.jar"
+    commandLine "java", "-jar", "build/libs/Artur.jar"
 }
 
 test {
